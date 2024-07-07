@@ -1,5 +1,7 @@
 **E-commerce Inventory Management System**
 **Description**
+
+
 This E-commerce Inventory Management System is a robust and user-friendly application designed to streamline the process of managing inventory for an online store. Built using Python, this system offers a comprehensive set of features to handle product management, order processing, sales reporting, and data persistence, ensuring a smooth and efficient operation for e-commerce businesses.
 
 **Features**
