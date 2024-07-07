@@ -31,10 +31,8 @@ while not is_game_over:
         if choice <1:
             print("Choose Greater than 1")
         elif choice >100:
-            print("Choose under 100")
-   
-
-        # boundary=[]
+            print("Choose under 100")   
+       # boundary=[]
        
         
         if random_num > choice:
