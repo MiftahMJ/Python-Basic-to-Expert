@@ -1,3 +1,4 @@
+
 from question_model import Question
 from data import question_data
 from quiz_brain import QuizBrain
@@ -16,3 +17,6 @@ while quiz.still_has_questions():
 
 print("You have completed the quiz")
 print(f"Your final score was 10/{len(question_bank)}")
+
+
+

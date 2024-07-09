@@ -1,3 +1,4 @@
+import os
 class QuizBrain:
     def __init__(self, q_list):
         self.q_n = 0
@@ -24,3 +25,5 @@ class QuizBrain:
             print("That's wrong")
         print(f"The correct answer was: {correct_answer}")
         print(f"Your current score is: {self.score}/{self.q_n}")
+
+
