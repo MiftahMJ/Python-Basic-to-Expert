@@ -1,8 +1,12 @@
 **Turtle Module**
+
 Basic functionalities and implementation of colormode, positions of the turtle.
+
 **Random Drawing**
+
 Draws a drawing with random pattern
 **Spirograph**
+
 Draws circle over circles
 The video files are attached below:
 
