@@ -22,4 +22,6 @@ The game will announce the winning turtle and inform you if your bet was correct
 **Requirements:**
 Python 3.x
 turtle module (standard with Python installations)
+![enhanced turtle](https://github.com/user-attachments/assets/f75db8f0-f6c8-49e9-8aab-f285bf58c76d)
+
 ![turtlerace](https://github.com/user-attachments/assets/dd918142-d8a5-4e1f-a283-63c55c843afa)
