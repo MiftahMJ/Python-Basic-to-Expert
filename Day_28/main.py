@@ -12,7 +12,7 @@ SHORT_BREAK_MIN = 5
 LONG_BREAK_MIN = 20
 reps = 0
 timer = None
-
+session_history = []
 
 # ---------------------------- TIMER RESET ------------------------------- #
 def reset_timer():
@@ -22,7 +22,6 @@ def reset_timer():
     check_marks.config(text="")
     global reps
     reps = 0
-
 
 # ---------------------------- TIMER MECHANISM ------------------------------- #
 def start_timer():
@@ -43,7 +42,6 @@ def start_timer():
         count_down(work_sec)
         timer_label.config(text="Work", fg=GREEN)
 
-
 # ---------------------------- COUNTDOWN MECHANISM ------------------------------- #
 def count_down(count):
     count_min = math.floor(count / 60)
@@ -58,13 +56,86 @@ def count_down(count):
         global timer
         timer = window.after(1000, count_down, count - 1)
     else:
+        record_session()
         start_timer()
-        marks = ""
-        work_sessions = math.floor(reps / 2)
-        for _ in range(work_sessions):
-            marks += "✔"
-        check_marks.config(text=marks)
+        update_check_marks()
 
+def record_session():
+    if reps % 8 == 0:
+        session_history.append(("Long Break", LONG_BREAK_MIN))
+    elif reps % 2 == 0:
+        session_history.append(("Short Break", SHORT_BREAK_MIN))
+    else:
+        session_history.append(("Work", WORK_MIN))
+
+def update_check_marks():
+    marks = ""
+    work_sessions = math.floor(reps / 2)
+    for _ in range(work_sessions):
+        marks += "✔"
+    check_marks.config(text=marks)
+
+# ------------------------ SETTINGS MENU -----------------------------------
+def open_settings():
+    settings_window = Toplevel(window)
+    settings_window.title("Settings")
+    settings_window.config(padx=20, pady=20, bg=YELLOW)
+
+    work_label = Label(settings_window, text="Work Duration (min):", bg=YELLOW, font=(FONT_NAME, 12))
+    work_label.grid(row=0, column=0)
+    work_entry = Entry(settings_window)
+    work_entry.grid(row=0, column=1)
+    work_entry.insert(0, WORK_MIN)
+
+    short_break_label = Label(settings_window, text="Short Break Duration (min):", bg=YELLOW, font=(FONT_NAME, 12))
+    short_break_label.grid(column=0, row=1)
+    short_break_entry = Entry(settings_window)
+    short_break_entry.grid(column=1, row=1)
+    short_break_entry.insert(0, SHORT_BREAK_MIN)
+
+    long_break_label = Label(settings_window, text="Long Break Duration (min):", bg=YELLOW, font=(FONT_NAME, 12))
+    long_break_label.grid(column=0, row=2)
+    long_break_entry = Entry(settings_window)
+    long_break_entry.grid(column=1, row=2)
+    long_break_entry.insert(0, LONG_BREAK_MIN)
+
+    def save_settings():
+        global WORK_MIN, SHORT_BREAK_MIN, LONG_BREAK_MIN
+        WORK_MIN = int(work_entry.get())
+        SHORT_BREAK_MIN = int(short_break_entry.get())
+        LONG_BREAK_MIN = int(long_break_entry.get())
+        settings_window.destroy()
+
+    save_button = Button(settings_window, text="Save", command=save_settings)
+    save_button.grid(column=0, row=3, columnspan=2)
+
+# ---------------------------- SESSION HISTORY ---------------------------------
+def show_history():
+    history_window = Toplevel(window)
+    history_window.title("Session History")
+    history_window.config(padx=20, pady=20, bg=YELLOW)
+
+    history_label = Label(history_window, text="Session History", font=(FONT_NAME, 20), bg=YELLOW)
+    history_label.grid(column=0, row=0, columnspan=2)
+
+    row = 1
+
+    for session, duration in session_history:
+        session_label = Label(history_window, text=f"{session}: {duration} min", bg=YELLOW, font=(FONT_NAME, 12))
+        session_label.grid(column=0, row=row)
+        row += 1
+
+    total_work_time = sum(duration for session, duration in session_history if session == "Work")
+    total_break_time = sum(duration for session, duration in session_history if session != "Work")
+    total_sessions = len([session for session, duration in session_history if session == "Work"])
+
+    summary_label = Label(
+        history_window,
+        text=f"Total work time: {total_work_time} min\nTotal break time: {total_break_time} min\nTotal sessions: {total_sessions}",
+        bg=YELLOW,
+        font=(FONT_NAME, 12)
+    )
+    summary_label.grid(column=0, row=row, columnspan=2)
 
 # ---------------------------- UI SETUP ------------------------------- #
 window = Tk()
@@ -86,7 +157,13 @@ start_button.grid(column=0, row=2)
 reset_button = Button(text="Reset", highlightthickness=0, command=reset_timer)
 reset_button.grid(column=2, row=2)
 
+settings_button = Button(text="Settings", highlightthickness=0, command=open_settings)
+settings_button.grid(column=1, row=3)
+
+history_button = Button(text="History", highlightthickness=0, command=show_history)
+history_button.grid(column=1, row=4)
+
 check_marks = Label(fg=GREEN, bg=YELLOW)
-check_marks.grid(column=1, row=3)
+check_marks.grid(column=1, row=5)
 
 window.mainloop()
