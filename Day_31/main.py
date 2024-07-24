@@ -16,6 +16,7 @@ except FileNotFoundError:
     except FileNotFoundError:
         print("No data file found. Please ensure the correct file path.")
 
+
 def next_card():
     global current_card, flip_timer
     window.after_cancel(flip_timer)
@@ -25,10 +26,12 @@ def next_card():
     canvas.itemconfig(card_background, image=card_front_img)
     flip_timer = window.after(3000, func=flip_card)
 
+
 def flip_card():
     canvas.itemconfig(card_title, text="English", fill="white")
     canvas.itemconfig(card_word, text=current_card["English"], fill="white")
     canvas.itemconfig(card_background, image=card_back_img)
+
 
 def is_known():
     to_learn.remove(current_card)
@@ -36,6 +39,7 @@ def is_known():
     data = pandas.DataFrame(to_learn)
     data.to_csv("data/words_to_learn.csv", index=False)
     next_card()
+
 
 window = Tk()
 window.title("Flashy")
