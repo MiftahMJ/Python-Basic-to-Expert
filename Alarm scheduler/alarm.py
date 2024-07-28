@@ -1,6 +1,6 @@
 import tkinter as tk
-from tkinter import filedialog, messagebox
-from tkinter import font
+from tkinter import filedialog, messagebox, font, ttk
+from tkcalendar import DateEntry
 from datetime import datetime
 from playsound import playsound
 import sqlite3
@@ -55,13 +55,15 @@ def notify_alarm(alarm_name, message, audio_path):
 
 # Alarm thread
 def alarm_thread(alarm_id, due_date, audio_path):
-    while True:
+    alarm_triggered = False
+    while not alarm_triggered:
         current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         if current_time == due_date:
-            alarm = [alarm for alarm in get_alarms() if alarm[0] == alarm_id][0]
-            notify_alarm(alarm[1], alarm[2], audio_path)
-            break
-        time.sleep(1)
+            alarm = [alarm for alarm in get_alarms() if alarm[0] == alarm_id]
+            if alarm:
+                notify_alarm(alarm[0][1], alarm[0][2], audio_path)
+                alarm_triggered = True
+        time.sleep(0.5)  # Check every half second
 
 # GUI
 class StylishAlarmApp:
@@ -96,10 +98,13 @@ class StylishAlarmApp:
         self.comment_entry.pack(pady=5)
 
         # Due Date
-        self.due_date_label = tk.Label(root, text="Due Date (YYYY-MM-DD HH:MM:SS)", bg="#f0f0f0", font=self.title_font)
+        self.due_date_label = tk.Label(root, text="Due Date", bg="#f0f0f0", font=self.title_font)
         self.due_date_label.pack(pady=(10, 5))
-        self.due_date_entry = tk.Entry(root, width=50, borderwidth=2, relief="groove", bg="#ffffff")
-        self.due_date_entry.pack(pady=5)
+        self.due_date_picker = DateEntry(root, width=47, background='darkblue', foreground='white', borderwidth=2, date_pattern='yyyy-mm-dd')
+        self.due_date_picker.pack(pady=5)
+        self.due_time_entry = tk.Entry(root, width=50, borderwidth=2, relief="groove", bg="#ffffff")
+        self.due_time_entry.pack(pady=5)
+        self.due_time_entry.insert(0, "HH:MM:SS")
 
         # Audio File
         self.audio_path = None
@@ -126,7 +131,7 @@ class StylishAlarmApp:
         name = self.name_entry.get()
         description = self.desc_entry.get()
         comment = self.comment_entry.get()
-        due_date = self.due_date_entry.get()
+        due_date = self.due_date_picker.get() + " " + self.due_time_entry.get()
         audio_path = self.audio_path
 
         if not name or not description or not comment or not due_date:
@@ -148,7 +153,6 @@ class StylishAlarmApp:
         return get_alarms()[-1][0]
 
     def refresh_alarm_list(self):
-        # Avoid updating with widgets that have already been destroyed
         for widget in self.root.winfo_children():
             if isinstance(widget, tk.Label) and widget not in [self.title_label, self.name_label, self.desc_label, self.comment_label, self.due_date_label, self.audio_label]:
                 widget.destroy()
