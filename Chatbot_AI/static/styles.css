@@ -1,0 +1,20 @@
+.sidebar {
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+}
+
+.main-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+input::placeholder {
+    color: #ccc;
+}
