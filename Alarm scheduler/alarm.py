@@ -12,7 +12,7 @@ def setup_database():
     conn = sqlite3.connect('alarm_scheduler.db')
     c = conn.cursor()
     c.execute('''
-        CREATE TABLE IF NOT EXISTS alarms (
+        CREATE TABLE IF NOT EXISTS alarms ( 
             id INTEGER PRIMARY KEY,
             name TEXT,
             description TEXT,
@@ -69,14 +69,14 @@ def alarm_thread(alarm_id, due_date, audio_path):
 class StylishAlarmApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("Stylish Alarm Scheduler")
+        self.root.title("Alarm Scheduler")
         self.root.geometry("500x600")
         self.root.config(bg="#f0f0f0")  # Background color
 
         self.title_font = font.Font(size=16, weight='bold')
 
         # Title Label
-        self.title_label = tk.Label(root, text="Stylish Alarm Scheduler", bg="#f0f0f0", font=self.title_font)
+        self.title_label = tk.Label(root, text="Alarm Scheduler", bg="#f0f0f0", font=self.title_font)
         self.title_label.pack(pady=20)
 
         # Alarm Name
