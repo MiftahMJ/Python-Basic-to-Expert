@@ -11,26 +11,33 @@ The Habit Tracker App is a simple yet powerful tool designed to help you monitor
 **User Management:**
 
 Create and manage user profiles with secure authentication.
+
 **Graph Creation:**
 
 Define and visualize custom graphs for various habits and activities.
+
 **Data Entry:**
 
 Log daily data points, such as distances cycled or calories burned, with easy input forms.
+
 **Data Updates:**
 
 Modify or update previously entered data to correct any mistakes.
+
 **Data Retrieval:**
 
 Fetch and review current graph data to track progress and trends.
+
 **Technical Details:**
 
 **API Integration:**
 
 Utilizes the Pixela API for graph management and data storage.
+
 **Date Handling:**
+
 Supports accurate data entry with date formatting in YYYYMMDD.
 
 **Data Management:** Allows for addition, updating, and deletion of data points through RESTful API calls.
+![cycling_graph](https://github.com/user-attachments/assets/78d0f666-bf6e-45cc-a7bf-84df6b49d065)
 
-![Uploading cycling_graph.gif…]()
