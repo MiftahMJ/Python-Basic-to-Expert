@@ -24,7 +24,7 @@ This repository contains all the projects and exercises from the "100 Days of Co
 Below are the projects and exercises organized by day. Click on any day to access the corresponding directory.
 
 ### 👨🏻‍🎓 Beginner
-- [Day 1: Working with Variables in Python to Manage Data](./Day1)
+- [Day 1: Working with Variables in Python to Manage Data](./Day_1)
 - [Day 2: Understanding Data Types and How to Manipulate Strings](./Day2)
 - [Day 3: Control Flow and Logical Operators](./Day3)
 - [Day 4: Randomisation and Python Lists](./Day4)
@@ -59,7 +59,7 @@ Below are the projects and exercises organized by day. Click on any day to acces
 - [Day 31: Capstone Project - Flash Card App](./Day31)
 
 ### 💪 Intermediate+
-- [Day 32: Send Email (smtplib) & Manage Dates (datetime): The Automated Birthday Wisher](./Day32)
+- [Day 32: Send Email (smtplib) & Manage Dates (datetime): The Automated Birthday Wisher](./Day_32)
 - [Day 33: API Endpoints and API Parameters - ISS Overhead Notifier](./Day33)
 - [Day 34: API Practice - Creating a GUI Quiz App](./Day34)
 - [Day 35: Keys, Authentication & Environment Variables: Send SMS](./Day35)
