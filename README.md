@@ -24,7 +24,7 @@ This repository contains all the projects and exercises from the "100 Days of Co
 Below are the projects and exercises organized by day. Click on any day to access the corresponding directory.
 
 ### 👨🏻‍🎓 Beginner
-- [Day 1: Working with Variables in Python to Manage Data](./Day_1)
+-  ./Day_1: Working with Variables in Python to Manage Data
 - [Day 2: Understanding Data Types and How to Manipulate Strings](./Day2)
 - [Day 3: Control Flow and Logical Operators](./Day3)
 - [Day 4: Randomisation and Python Lists](./Day4)
