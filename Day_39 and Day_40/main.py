@@ -60,6 +60,7 @@ def get_amadeus_access_token():
         'client_id': API_KEY,
         'client_secret': API_SECRET
     }
+
     response = requests.post(url, headers=headers, data=data)
     token = response.json().get('access_token')
     return token
