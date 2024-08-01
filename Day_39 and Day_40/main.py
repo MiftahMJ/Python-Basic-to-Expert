@@ -2,6 +2,9 @@ import requests
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
 from twilio.rest import Client
+import sendgrid
+from sendgrid.helpers.mail import Mail, Email, To, Content
+from pprint import pprint
 
 # Amadeus API credentials
 API_KEY = "5RXbh2fsEtLmjl5zobpbN6SGSteBUcMj"
@@ -10,7 +13,8 @@ API_SECRET = "4FCR4tMlE9CciA7h"
 # Google Sheets setup
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 SPREADSHEET_ID = '1nPE2qzdCYREByNMtZvBqQFk7rEA_5_uZkoUXIFidA6s'
-RANGE_NAME = 'prices!A2:C2'
+SHEET2_RANGE = 'sheet2!A2:C2'  # To update 'sheet2' with name and email
+PRICES_SHEET_RANGE = 'prices!A2:C'  # To append flight data to 'prices'
 
 # Twilio credentials
 TWILIO_ACCOUNT_SID = 'AC20d12d60bdf2802b0d4eb2ff23eb9684'
@@ -18,11 +22,32 @@ TWILIO_AUTH_TOKEN = '8473e5f73595ee67e9378ff06689b046'
 TWILIO_PHONE_NUMBER = '+18145243904'
 YOUR_PHONE_NUMBER = '+9203156867866'
 
+# SendGrid credentials
+SENDGRID_API_KEY = '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'
+FROM_EMAIL = "your_email@example.com"  # Replace with your SendGrid verified sender email
+TO_EMAIL = "recipient_email@example.com"  # Replace with your recipient email
+
+
+# FlightData class definition
+class FlightData:
+    def __init__(self, origin_city, origin_airport, destination_city, destination_airport, out_date, return_date,
+                 stop_overs=0, via_city=""):
+        self.origin_city = origin_city
+        self.origin_airport = origin_airport
+        self.destination_city = destination_city
+        self.destination_airport = destination_airport
+        self.out_date = out_date
+        self.return_date = return_date
+        self.stop_overs = stop_overs
+        self.via_city = via_city
+
+
 # Function to authenticate and access Google Sheets
 def authenticate_google_sheets():
     creds = Credentials.from_service_account_file('credentials .json', scopes=SCOPES)
     service = build('sheets', 'v4', credentials=creds)
     return service
+
 
 # Function to authenticate with Amadeus API and get an access token
 def get_amadeus_access_token():
@@ -39,6 +64,7 @@ def get_amadeus_access_token():
     token = response.json().get('access_token')
     return token
 
+
 # Function to fetch flight data using Amadeus API
 def fetch_flight_data(access_token, origin, destination, departure_date):
     url = "https://test.api.amadeus.com/v2/shopping/flight-offers"
@@ -52,17 +78,23 @@ def fetch_flight_data(access_token, origin, destination, departure_date):
         'adults': 1,
         'max': 5
     }
-    response = requests.get(url, headers=headers, params=params)
-    return response.json()
+    try:
+        response = requests.get(url, headers=headers, params=params)
+        response.raise_for_status()  # Raise an exception for HTTP errors
+        return response.json()
+    except requests.RequestException as e:
+        print(f"Error fetching flight data: {e}")
+        return {'data': []}
+
 
 # Function to append data to Google Sheets
-def append_to_google_sheets(service, values):
+def append_to_google_sheets(service, values, range_name):
     sheet = service.spreadsheets()
     body = {'values': values}
     try:
         result = sheet.values().append(
             spreadsheetId=SPREADSHEET_ID,
-            range=RANGE_NAME,
+            range=range_name,
             valueInputOption='RAW',
             insertDataOption='INSERT_ROWS',
             body=body
@@ -71,10 +103,10 @@ def append_to_google_sheets(service, values):
     except Exception as e:
         print(f"Error appending to Google Sheets: {e}")
 
+
 # Function to send SMS alert using Twilio
-def send_sms_alert(city_name, iata_code, price):
+def send_sms_alert(message):
     client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
-    message = f"Price alert! The price for a flight to {city_name} ({iata_code}) is now ${price}."
     try:
         client.messages.create(
             body=message,
@@ -85,9 +117,39 @@ def send_sms_alert(city_name, iata_code, price):
     except Exception as e:
         print(f"Error sending SMS: {e}")
 
+
+# Function to send email alert using SendGrid
+def send_email_alert(message):
+    sg = sendgrid.SendGridAPIClient(api_key=SENDGRID_API_KEY)
+    from_email = Email(FROM_EMAIL)
+    to_email = To(TO_EMAIL)
+    subject = "Flight Price Alert"
+    content = Content("text/plain", message)
+    mail = Mail(from_email, to_email, subject, content)
+    try:
+        response = sg.send(mail)
+        print("Email sent:")
+        print("Status Code:", response.status_code)
+        print("Response Body:", response.body.decode())
+        print("Response Headers:", response.headers)
+    except Exception as e:
+        print(f"Error sending email: {e}")
+
+
 def main():
+    # Collect user data
+    first_name = input("Enter your first name: ")
+    last_name = input("Enter your last name: ")
+    email = input("Enter your email: ")
+
+    # Prepare data for Google Sheets
+    user_data = [[first_name, last_name, email]]
+
     # Google Sheets authentication
     service = authenticate_google_sheets()
+
+    # Update user data in 'sheet2'
+    append_to_google_sheets(service, user_data, SHEET2_RANGE)
 
     # Obtain access token for Amadeus API
     access_token = get_amadeus_access_token()
@@ -100,38 +162,89 @@ def main():
     # Fetch flight data
     flight_data = fetch_flight_data(access_token, origin, destination, departure_date)
 
-    # Prepare data for Google Sheets
-    values = []
+    # Prepare flight data for Google Sheets
+    flight_values = []
     for offer in flight_data.get('data', []):
         try:
             # Extract IATA code, price, and city
-            iata_code = offer['itineraries'][0]['segments'][0]['arrival']['iataCode']
+            itineraries = offer.get('itineraries', [])
+            if not itineraries:
+                print("No itineraries available")
+                continue
+
+            # Check for direct flights first
+            direct = itineraries[0]['segments'][0]['arrival']['iataCode']
             price_info = offer.get('price', {})
             price = price_info.get('total', 'N/A')
 
-            # Convert price to float if it's a valid number
             if price != 'N/A':
                 price = float(price)
             else:
                 price = 'N/A'
 
-            # Determine city name
-            city_name = iata_code  # Use IATA code for city name in this example
+            # Append flight data
+            flight_values.append([direct, 'N/A', price])
 
-            # Append data
-            values.append([city_name, iata_code, price])
+            # Send alerts if price is below a certain threshold
+            if isinstance(price, float) and price < 200:
+                message = f"Price alert! The price for a flight to {direct} is now ${price}."
+                send_sms_alert(message)
+                send_email_alert(message)
 
-            # Send SMS alert if price is below a certain threshold
-            if isinstance(price, float) and price < 200:  # Set your desired price threshold
-                send_sms_alert(city_name, iata_code, price)
         except (KeyError, ValueError) as e:
             print(f"Skipping invalid data: {e}")
-            values.append(['N/A', 'N/A', 'N/A'])
+            flight_values.append(['N/A', 'N/A', 'N/A'])
 
-    if values:
-        append_to_google_sheets(service, values)
+    if flight_values:
+        append_to_google_sheets(service, flight_values, PRICES_SHEET_RANGE)  # Update 'prices' sheet
     else:
         print("No flight data to append.")
+
+    # Add specific data to the 'prices' sheet
+    specific_data = [['Bali', 'DPS', 501]]
+    append_to_google_sheets(service, specific_data, PRICES_SHEET_RANGE)
+
+    # Check for flights with stopovers if no direct flights are found
+    if not flight_values:
+        print("No direct flights found, checking for flights with stopovers...")
+        stopover_data = fetch_flight_data(access_token, origin, destination, departure_date)
+        pprint(stopover_data)
+
+        for offer in stopover_data.get('data', []):
+            try:
+                itineraries = offer.get('itineraries', [])
+                if itineraries and len(itineraries[0]['segments']) > 1:
+                    # Assume first segment is the origin to stopover, and second segment is stopover to destination
+                    stopover_city = itineraries[0]['segments'][1]['arrival']['iataCode']
+                    stopover_price_info = offer.get('price', {})
+                    stopover_price = stopover_price_info.get('total', 'N/A')
+
+                    if stopover_price != 'N/A':
+                        stopover_price = float(stopover_price)
+                    else:
+                        stopover_price = 'N/A'
+
+                    # Create a FlightData object with stopover info
+                    flight_data = FlightData(
+                        origin_city='New York',  # Example origin city
+                        origin_airport=origin,
+                        destination_city='Los Angeles',  # Example destination city
+                        destination_airport=destination,
+                        out_date=departure_date,
+                        return_date='',  # Adjust as needed
+                        stop_overs=1,
+                        via_city=stopover_city
+                    )
+
+                    message = (f"Price alert! The price for a flight to {flight_data.destination_city} "
+                               f"({flight_data.destination_airport}) with {flight_data.stop_overs} stopover(s) "
+                               f"via {flight_data.via_city} is now ${stopover_price}.")
+                    send_sms_alert(message)
+                    send_email_alert(message)
+
+            except (KeyError, ValueError) as e:
+                print(f"Skipping invalid stopover data: {e}")
+
 
 if __name__ == "__main__":
     main()
