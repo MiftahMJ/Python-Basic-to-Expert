@@ -1,3 +1,4 @@
+import os
 import requests
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
@@ -6,27 +7,26 @@ import sendgrid
 from sendgrid.helpers.mail import Mail, Email, To, Content
 from pprint import pprint
 
-# Amadeus API credentials
-API_KEY = "5RXbh2fsEtLmjl5zobpbN6SGSteBUcMj"
-API_SECRET = "4FCR4tMlE9CciA7h"
+# Amadeus API credentials from environment variables
+API_KEY = os.getenv('AMADEUS_API_KEY')
+API_SECRET = os.getenv('AMADEUS_API_SECRET')
 
 # Google Sheets setup
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
-SPREADSHEET_ID = '1nPE2qzdCYREByNMtZvBqQFk7rEA_5_uZkoUXIFidA6s'
+SPREADSHEET_ID = os.getenv('GOOGLE_SHEET_ID')
 SHEET2_RANGE = 'sheet2!A2:C2'  # To update 'sheet2' with name and email
 PRICES_SHEET_RANGE = 'prices!A2:C'  # To append flight data to 'prices'
 
-# Twilio credentials
-TWILIO_ACCOUNT_SID = 'AC20d12d60bdf2802b0d4eb2ff23eb9684'
-TWILIO_AUTH_TOKEN = '8473e5f73595ee67e9378ff06689b046'
-TWILIO_PHONE_NUMBER = '+18145243904'
-YOUR_PHONE_NUMBER = '+9203156867866'
+# Twilio credentials from environment variables
+TWILIO_ACCOUNT_SID = os.getenv('TWILIO_ACCOUNT_SID')
+TWILIO_AUTH_TOKEN = os.getenv('TWILIO_AUTH_TOKEN')
+TWILIO_PHONE_NUMBER = os.getenv('TWILIO_PHONE_NUMBER')
+YOUR_PHONE_NUMBER = os.getenv('YOUR_PHONE_NUMBER')
 
-# SendGrid credentials
-SENDGRID_API_KEY = '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'
-FROM_EMAIL = "your_email@example.com"  # Replace with your SendGrid verified sender email
-TO_EMAIL = "recipient_email@example.com"  # Replace with your recipient email
-
+# SendGrid credentials from environment variables
+SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY')
+FROM_EMAIL = os.getenv('FROM_EMAIL')
+TO_EMAIL = os.getenv('TO_EMAIL')
 
 # FlightData class definition
 class FlightData:
@@ -41,13 +41,11 @@ class FlightData:
         self.stop_overs = stop_overs
         self.via_city = via_city
 
-
 # Function to authenticate and access Google Sheets
 def authenticate_google_sheets():
-    creds = Credentials.from_service_account_file('credentials .json', scopes=SCOPES)
+    creds = Credentials.from_service_account_file('credentials.json', scopes=SCOPES)
     service = build('sheets', 'v4', credentials=creds)
     return service
-
 
 # Function to authenticate with Amadeus API and get an access token
 def get_amadeus_access_token():
@@ -64,7 +62,6 @@ def get_amadeus_access_token():
     response = requests.post(url, headers=headers, data=data)
     token = response.json().get('access_token')
     return token
-
 
 # Function to fetch flight data using Amadeus API
 def fetch_flight_data(access_token, origin, destination, departure_date):
@@ -87,7 +84,6 @@ def fetch_flight_data(access_token, origin, destination, departure_date):
         print(f"Error fetching flight data: {e}")
         return {'data': []}
 
-
 # Function to append data to Google Sheets
 def append_to_google_sheets(service, values, range_name):
     sheet = service.spreadsheets()
@@ -104,7 +100,6 @@ def append_to_google_sheets(service, values, range_name):
     except Exception as e:
         print(f"Error appending to Google Sheets: {e}")
 
-
 # Function to send SMS alert using Twilio
 def send_sms_alert(message):
     client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
@@ -117,7 +112,6 @@ def send_sms_alert(message):
         print(f"SMS sent: {message}")
     except Exception as e:
         print(f"Error sending SMS: {e}")
-
 
 # Function to send email alert using SendGrid
 def send_email_alert(message):
@@ -135,7 +129,6 @@ def send_email_alert(message):
         print("Response Headers:", response.headers)
     except Exception as e:
         print(f"Error sending email: {e}")
-
 
 def main():
     # Collect user data
@@ -245,7 +238,6 @@ def main():
 
             except (KeyError, ValueError) as e:
                 print(f"Skipping invalid stopover data: {e}")
-
 
 if __name__ == "__main__":
     main()
