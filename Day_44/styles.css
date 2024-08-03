@@ -1,3 +1,23 @@
 body{
-    background: blue;
+    margin: 0;
+    text-align: center;
+}
+h1{
+    margin-top: 0;
+}
+div1{
+    background: rgb(146, 199, 245);
+   position: relative;
+   padding-top: 100px;
+   
+}
+.topcloud{
+  position: absolute;  
+  right: 300px;
+  top: 50px;
+}
+.bottomcloud{
+    position:absolute;
+   left: 300px;
+   bottom: 300px;
 }
