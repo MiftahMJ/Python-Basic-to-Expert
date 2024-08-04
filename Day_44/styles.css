@@ -5,6 +5,10 @@ body{
 }
 h1{
     margin-top: 0;
+    color: #66BFBF;
+}
+p{
+    color: #66BFBF;
 }
 div1{
     background: rgb(146, 199, 245);
