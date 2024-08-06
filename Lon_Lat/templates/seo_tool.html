@@ -1,0 +1,134 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">-->
+<!--    <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">-->
+<!--    <title>Coordinate Processor</title>-->
+<!--</head>-->
+<!--<body>-->
+<!--    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">-->
+<!--        <a class="navbar-brand" href="#">SEO Tools</a>-->
+<!--        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">-->
+<!--            <span class="navbar-toggler-icon"></span>-->
+<!--        </button>-->
+<!--        <div class="collapse navbar-collapse" id="navbarNav">-->
+<!--            <ul class="navbar-nav ml-auto">-->
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link" href="{{ url_for('index') }}">Home</a>-->
+<!--                </li>-->
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link" href="#">About</a>-->
+<!--                </li>-->
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link" href="#">Contact</a>-->
+<!--                </li>-->
+<!--            </ul>-->
+<!--        </div>-->
+<!--    </nav>-->
+
+<!--    <div class="container mt-5">-->
+<!--        <h2>Coordinate Processor</h2>-->
+<!--        <form method="post">-->
+<!--            <div class="form-group">-->
+<!--                <label for="coordinates">Enter data (Longitude, Latitude):</label>-->
+<!--                <textarea class="form-control" id="coordinates" name="coordinates" rows="10"></textarea>-->
+<!--            </div>-->
+<!--            <button type="submit" class="btn btn-success">Generate Excel</button>-->
+<!--        </form>-->
+<!--    </div>-->
+
+<!--    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>-->
+<!--    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>-->
+<!--    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>-->
+<!--</body>-->
+<!--</html>-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
+    <title>Coordinate Processor</title>
+    <style>
+        /* Inline styling for the instructions section */
+        .instructions {
+            background-color: #FFFFFF; /* Background color */
+            padding: 20px; /* Padding around the text */
+            border-radius: 8px; /* Rounded corners */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            margin-bottom: 20px; /* Margin below the section */
+        }
+
+        .instructions h5 {
+            color: #6096B4; /* Heading color */
+            margin-bottom: 15px; /* Space below the heading */
+        }
+
+        .instructions p {
+            color: #333333; /* Text color */
+            margin-bottom: 10px; /* Space below paragraphs */
+        }
+
+        .instructions pre {
+            background-color: #F8F9FA; /* Background for code block */
+            border: 1px solid #DEE2E6; /* Border around code block */
+            padding: 10px; /* Padding inside code block */
+            border-radius: 4px; /* Rounded corners for code block */
+            color: #000000; /* Text color inside code block */
+            font-family: 'Courier New', Courier, monospace; /* Monospace font */
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <a class="navbar-brand" href="#">SEO Tools</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('index') }}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">About</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Contact</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <h2 class="text-center">Coordinate Processor</h2>
+
+        <!-- Instructions section -->
+        <div class="instructions mb-4">
+            <h5>How to Use:</h5>
+            <p>Enter longitude and latitude data in the format <code>longitude, latitude</code> for each pair, separated by spaces. For example:</p>
+            <pre>45.123, 12.456 67.890, 34.567</pre>
+            <p>Click the "Generate Excel" button to create an Excel file with the valid coordinate pairs.</p>
+        </div>
+
+        <form method="post" class="mt-4">
+            <div class="form-group">
+                <label for="coordinates">Enter data (Longitude, Latitude):</label>
+                <textarea class="form-control" id="coordinates" name="coordinates" rows="10"></textarea>
+            </div>
+            <button type="submit" class="btn btn-teal">Generate Excel</button>
+        </form>
+    </div>
+
+<!--    <footer class="footer mt-5">-->
+<!--        <p>&copy; 2024 Local SEO Tools. All rights reserved.</p>-->
+<!--    </footer>-->
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
