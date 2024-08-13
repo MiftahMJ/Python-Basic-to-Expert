@@ -51,62 +51,70 @@
 
 <!--</body>-->
 <!--</html>-->
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChatGPT Clone</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Title Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+            background-color: #f4f4f4;
+        }
+        textarea {
+            width: 100%;
+            max-width: 600px;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        input[type="submit"] {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        .result p {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 4px;
+            display: inline-block;
+            max-width: 600px;
+            word-wrap: break-word;
+        }
+    </style>
 </head>
 <body>
-    <div id="chat-container">
-        <div id="chat-box"></div>
-        <input type="text" id="user-input" placeholder="Type your message here...">
-        <button onclick="sendMessage()">Send</button>
-    </div>
-
-    <script>
-        function sendMessage() {
-            const userInput = document.getElementById('user-input').value;
-            const chatBox = document.getElementById('chat-box');
-
-            if (userInput.trim() === '') return;
-
-            // Add user message to chat
-            chatBox.innerHTML += `<div>User: ${userInput}</div>`;
-
-            // Send message to Flask backend
-            fetch('/generate', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ input: userInput }),
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                // Check if data contains the expected fields
-                if (data && data.output) {
-                    chatBox.innerHTML += `<div>ChatGPT: ${data.output}</div>`;
-                } else {
-                    chatBox.innerHTML += `<div>ChatGPT: Error: Unexpected response format</div>`;
-                }
-                chatBox.scrollTop = chatBox.scrollHeight; // Scroll to the bottom
-            })
-            .catch(error => {
-                console.error('Fetch error:', error);
-                chatBox.innerHTML += `<div>ChatGPT: Error: ${error.message}</div>`;
-            });
-
-            // Clear user input
-            document.getElementById('user-input').value = '';
-        }
-    </script>
+    <h1>Generate a Title</h1>
+    <form action="/generate" method="post">
+        <label for="prompt">Enter a keyword or prompt for the title:</label><br>
+        <textarea id="prompt" name="prompt" rows="4" placeholder="Describe your topic..."></textarea><br><br>
+        <input type="submit" value="Generate Title">
+    </form>
+    {% if title %}
+        <div class="result">
+            <h2>Generated Title:</h2>
+            <p>{{ title }}</p>
+        </div>
+    {% endif %}
 </body>
 </html>
+
+
