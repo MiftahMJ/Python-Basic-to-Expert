@@ -58,7 +58,8 @@ for i in range(len(links)):
     submit_button.click()
 
     # Wait for the form to submit
-    time.sleep(10)
+
 
 # Close the browser when done
 driver.quit()
+time.sleep(50)
