@@ -90,7 +90,7 @@ import google.generativeai as genai
 app = Flask(__name__)
 
 # Set your API key directly (replace this with your actual API key)
-GOOGLE_API_KEY = ''
+GOOGLE_API_KEY = 'AIzaSyDFYCkYWVU7a9u_sUSjoM7ghNJzm9WJBZQ'
 
 # Configure the Generative AI API with your API key
 genai.configure(api_key=GOOGLE_API_KEY)
@@ -106,11 +106,16 @@ def generate_title(prompt):
 
         # Adjust based on actual response structure
         if hasattr(response, 'text'):
-            return response.text
+            titles = response.text
         elif isinstance(response, dict) and 'text' in response:
-            return response['text']
+            titles = response['text']
         else:
-            return str(response)  # Convert the whole response object to string if no 'text' field
+            titles = str(response)  # Convert the whole response object to string if no 'text' field
+
+        # Split the titles into a list (based on newlines or periods)
+        # Customize this splitting logic based on how titles are separated
+        title_list = titles.split('\n')
+        return '<br>'.join(title_list)
 
     except Exception as e:
         return f"An error occurred: {e}"
