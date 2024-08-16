@@ -90,53 +90,42 @@ import google.generativeai as genai
 app = Flask(__name__)
 
 # Set your API key directly (replace this with your actual API key)
-GOOGLE_API_KEY = 'AIzaSyDFYCkYWVU7a9u_sUSjoM7ghNJzm9WJBZQ'
-
-# Configure the Generative AI API with your API key
+GOOGLE_API_KEY = 'AIzaSyCHl7g8gQKOyPhLeAQA96UGkhywQKrMF58'  # Replace with your actual API key
 genai.configure(api_key=GOOGLE_API_KEY)
 
-
-def generate_title(prompt):
-    """
-    Generate a title using the Generative AI API based on the given prompt.
+def generate_title(focus_keyword):
+    prompt = f"""
+    Write a compelling blog title focused on '{focus_keyword}' that is both engaging for readers and optimized for SEO.
+    Note:
+    - Focus keyword used at the beginning of the SEO title.
+    - Title must have a positive or negative sentiment.
+    - Title must contain a power word or word(s).
+    - Use a number in your SEO title.
+    - Use a number at the start, and include the latest year in the title.
+    Suggest 5 titles.
     """
     try:
-        # Call the API to generate text based on the prompt
         response = genai.generate_text(prompt=prompt)
-
-        # Adjust based on actual response structure
-        if hasattr(response, 'text'):
-            titles = response.text
-        elif isinstance(response, dict) and 'text' in response:
-            titles = response['text']
-        else:
-            titles = str(response)  # Convert the whole response object to string if no 'text' field
-
-        # Split the titles into a list (based on newlines or periods)
-        # Customize this splitting logic based on how titles are separated
-        title_list = titles.split('\n')
-        return '<br>'.join(title_list)
-
+        if hasattr(response, 'result'):
+            titles = response.result.split('\n')  # Split the result by new lines
+            # Clean up titles by removing any leading or trailing '**' and extra spaces
+            cleaned_titles = [title.strip('*').strip() for title in titles]
+            return cleaned_titles
+        return ["No titles were generated."]
     except Exception as e:
-        return f"An error occurred: {e}"
+        return [f"An error occurred: {e}"]
 
-
-@app.route('/')
-def index():
-    return render_template('index.html', title=None)
-
-
-@app.route('/generate', methods=['POST'])
+@app.route('/', methods=['GET', 'POST'])
 def generate():
-    # Get the prompt from the form
-    prompt = request.form['prompt']
-
-    # Generate title
-    title = generate_title(prompt)
-
-    # Render the HTML template with the generated title
-    return render_template('index.html', title=title)
-
+    titles = None
+    error = None
+    if request.method == 'POST':
+        focus_keyword = request.form.get('prompt', '')
+        if focus_keyword:
+            titles = generate_title(focus_keyword)
+        else:
+            error = "Please enter a focus keyword."
+    return render_template('index.html', titles=titles, error=error)
 
 if __name__ == '__main__':
     app.run(debug=True)
