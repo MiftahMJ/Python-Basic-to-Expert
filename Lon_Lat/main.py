@@ -72,6 +72,7 @@ import pandas as pd
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'
 
+
 def validate_lat_long(lat, lon):
     try:
         lat = float(lat)
@@ -82,6 +83,7 @@ def validate_lat_long(lat, lon):
             return False
     except ValueError:
         return False
+
 
 def process_coordinates(data):
     valid_data = []
@@ -104,15 +106,18 @@ def process_coordinates(data):
 
     return valid_data, invalid_data
 
+
 def generate_excel(valid_data):
     df = pd.DataFrame(valid_data, columns=['Longitude', 'Latitude'])
     file_path = 'coordinates.xlsx'
     df.to_excel(file_path, index=False)
     return file_path
 
+
 @app.route('/', methods=['GET'])
 def index():
     return render_template('index.html')
+
 
 @app.route('/seo_tool', methods=['GET', 'POST'])
 def seo_tool():
@@ -130,6 +135,13 @@ def seo_tool():
             flash("No valid data to save.", "warning")
 
     return render_template('seo_tool.html')
+
+
+@app.route('/title-generator')
+def title_generator():
+    # Your logic for the title generator tool
+    return render_template('title_generator.html')
+
 
 if __name__ == '__main__':
     app.run(debug=True)
