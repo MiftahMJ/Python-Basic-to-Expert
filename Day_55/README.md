@@ -7,4 +7,6 @@ Users can guess the number by entering their guess directly in the URL.
 The application then responds with a message indicating whether the guess is too low, too high, or correct.
 The response is visually enhanced with different text colors to indicate the result of the guess.
 This project demonstrates the basics of Flask routing, random number generation, and dynamic HTML responses.
-![Untitled video - Made with Clipchamp (6).gif](..%2F..%2F..%2FDownloads%2FUntitled%20video%20-%20Made%20with%20Clipchamp%20%286%29.gif)
+
+
+![Untitled video - Made with Clipchamp (6)](https://github.com/user-attachments/assets/13e362e7-ba13-4771-91f6-b63bad8c7c68)
