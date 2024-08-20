@@ -74,6 +74,18 @@ def generate_title(focus_keyword):
         logging.error(f"An error occurred: {e}")
         return [f"An error occurred: {e}"]
 
+# @app.route('/', methods=['GET', 'POST'])
+# def generate():
+#     titles = None
+#     error = None
+#     if request.method == 'POST':
+#         focus_keyword = request.form.get('prompt', '')
+#         if focus_keyword:
+#             titles = generate_title(focus_keyword)
+#         else:
+#             error = "Please enter a focus keyword."
+#     return render_template('title_generator.html', titles=titles, error=error)
+
 @app.route('/', methods=['GET', 'POST'])
 def generate():
     titles = None
