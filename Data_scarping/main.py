@@ -92,3 +92,4 @@ with open(csv_file, mode='w', newline='', encoding='utf-8') as file:
     writer.writerow(data)
 
 print(f"Data successfully written to {csv_file}")
+
