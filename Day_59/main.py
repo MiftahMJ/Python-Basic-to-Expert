@@ -19,11 +19,11 @@ def about():
 def contact():
     return render_template("contact.html")
 
-@app.route("/post/<int:post_id>")
-def show_post(post_id):
-    # Find the specific post by its ID
-    post = next((post for post in posts if post['id'] == post_id), None)
-    return render_template("post.html", post=post)
+# @app.route("/post/<int:post_id>")
+# def show_post(post_id):
+#     # Find the specific post by its ID
+#     post = next((post for post in posts if post['id'] == post_id), None)
+#     return render_template("post.html", post=post)
 
 if __name__ == "__main__":
     app.run(debug=True)
