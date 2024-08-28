@@ -1,0 +1,1 @@
+https://service2.diplo.de/rktermin/extern/appointment_showDay.do?locationCode=bagd&realmId=607&categoryId=2025&dateStr=30.09.2024&openingPeriodId=65221

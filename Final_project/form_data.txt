@@ -1,0 +1,7 @@
+lastname=Doe
+firstname=John
+email=john.doe@example.com
+emailrepeat=john.doe@example.com
+passport_number=A12345678
+telephone=1234567890
+company=Example University
