@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Access Denied{% endblock %}
+
+{% block content %}
+   <div class="container">
+      <h1>Access Denied</h1>
+      <p>Sorry, your login credentials were incorrect. Please try again.</p>
+   </div>
+{% endblock %}
+
+{% block styling %}
+   {{ super() }}
+   h1 {
+      color: red;
+   }
+{% endblock %}
