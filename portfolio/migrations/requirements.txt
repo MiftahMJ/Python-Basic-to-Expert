@@ -1,9 +1,0 @@
-Flask
-Flask-SQLAlchemy
-Flask-WTF
-Flask-Login
-Flask-Migrate
-Werkzeug
-attrs>=19.3.0,<20.0.0
-aiohttp==3.9.5
-aki==0.1.0.dev0
