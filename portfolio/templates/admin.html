@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Admin Panel</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Approved</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+                <tr>
+                    <td>{{ student.username }}</td>
+                    <td>{{ student.email }}</td>
+                    <td>{{ 'Yes' if student.approved else 'No' }}</td>
+                    <td>
+                        {% if not student.approved %}
+                            <form action="{{ url_for('approve_user', user_id=student.id) }}" method="POST">
+                                <button type="submit">Approve</button>
+                            </form>
+                        {% endif %}
+                        <form action="{{ url_for('assign_badge', user_id=student.id) }}" method="POST">
+                            <select name="badge">
+                                <option value="Silver">Silver</option>
+                                <option value="Golden">Golden</option>
+                            </select>
+                            <button type="submit">Assign Badge</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
