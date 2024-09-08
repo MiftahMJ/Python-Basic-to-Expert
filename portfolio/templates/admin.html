@@ -25,17 +25,25 @@
                     <td>{{ student.email }}</td>
                     <td>{{ 'Yes' if student.approved else 'No' }}</td>
                     <td>
+                        <!-- Approve button -->
                         {% if not student.approved %}
-                            <form action="{{ url_for('approve_user', user_id=student.id) }}" method="POST">
+                            <form action="{{ url_for('approve_user', user_id=student.id) }}" method="POST" style="display:inline-block;">
                                 <button type="submit">Approve</button>
                             </form>
                         {% endif %}
-                        <form action="{{ url_for('assign_badge', user_id=student.id) }}" method="POST">
+
+                        <!-- Assign Badge Form -->
+                        <form action="{{ url_for('assign_badge', user_id=student.id) }}" method="POST" style="display:inline-block;">
                             <select name="badge">
                                 <option value="Silver">Silver</option>
                                 <option value="Golden">Golden</option>
                             </select>
                             <button type="submit">Assign Badge</button>
+                        </form>
+
+                        <!-- Delete User Form -->
+                        <form action="{{ url_for('delete_user', user_id=student.id) }}" method="POST" style="display:inline-block;">
+                            <button type="submit" onclick="return confirm('Are you sure you want to delete this user?');">Delete</button>
                         </form>
                     </td>
                 </tr>

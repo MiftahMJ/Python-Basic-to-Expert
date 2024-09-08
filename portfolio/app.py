@@ -2,7 +2,7 @@ import os
 from flask import Flask, render_template, redirect, url_for, flash, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_security import Security, SQLAlchemyUserDatastore, UserMixin, RoleMixin, login_required
-from flask_security.utils import hash_password, verify_password
+from passlib.hash import argon2
 from flask_login import login_user, logout_user, current_user
 from flask_migrate import Migrate
 from werkzeug.utils import secure_filename
@@ -32,14 +32,13 @@ roles_users = db.Table('roles_users',
                        db.Column('role_id', db.Integer(), db.ForeignKey('role.id'))
                        )
 
-# Role model for role-based access control
+
 class Role(db.Model, RoleMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True)
     description = db.Column(db.String(255))
 
 
-# User model with portfolio fields
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True, nullable=False)
@@ -50,7 +49,6 @@ class User(db.Model, UserMixin):
     fs_uniquifier = db.Column(db.String(255), unique=True, nullable=False, default=lambda: str(uuid4()))
     badge = db.Column(db.String(50))
 
-    # Portfolio fields
     youtube_link = db.Column(db.String(255))
     image_filename = db.Column(db.String(255))
     description = db.Column(db.Text)
@@ -74,16 +72,13 @@ with app.app_context():
 def create_admin():
     with app.app_context():
         admin_role = user_datastore.find_or_create_role(name='admin', description='Administrator')
-
-        # Check if the admin user already exists
-        admin_user = user_datastore.find_user(email="admin@example.com")
+        admin_user = user_datastore.find_user(username="admin") or user_datastore.find_user(email="admin@example.com")
 
         if not admin_user:
-            # Create the admin user
+            # Hash the admin password using Argon2
             user = user_datastore.create_user(username="admin", email="admin@example.com",
-                                              password=hash_password("adminpass"))
-
-            # Assign the admin role to the user after creation
+                                              password=argon2.hash("adminpass"),
+                                              active=True, approved=True)
             user_datastore.add_role_to_user(user, admin_role)
             db.session.commit()
             print("Admin user created successfully.")
@@ -121,18 +116,16 @@ def signup():
     if request.method == 'POST':
         username = request.form['username']
         email = request.form['email']
-        password = hash_password(request.form['password'])
+        password = argon2.hash(request.form['password'])
 
-        # Check if the username or email already exists
         existing_user = user_datastore.find_user(username=username) or user_datastore.find_user(email=email)
         if existing_user:
             flash('Username or email already exists. Please choose a different one.', 'error')
             return redirect(url_for('signup'))
 
-        # Create the user
         user = user_datastore.create_user(username=username, email=email, password=password, approved=False)
-
-        # Commit the user to the database
+        student_role = user_datastore.find_or_create_role(name='student', description='Student')
+        user_datastore.add_role_to_user(user, student_role)
         db.session.commit()
 
         flash('Your account has been created. Please wait for admin approval.', 'info')
@@ -149,18 +142,19 @@ def signin():
         password = request.form['password']
         user = user_datastore.find_user(email=email)
 
-        if user and verify_password(password, user.password):
-            if user.approved:
-                login_user(user)
-                flash('Logged in successfully.', 'success')
-                print(f'User {email} logged in and approved.')
-                return redirect(url_for('view_portfolio'))
+        try:
+            if user and argon2.verify(password, user.password):
+                if user.approved:
+                    login_user(user)
+                    flash('Logged in successfully.', 'success')
+                    return redirect(url_for('view_portfolio'))
+                else:
+                    flash('Your account is not yet approved by the admin.', 'error')
             else:
-                flash('Your account is not yet approved by the admin.', 'error')
-                print(f'User {email} not approved.')
-        else:
-            flash('Invalid credentials. Please try again.', 'error')
-            print(f'Failed login attempt for email: {email}')
+                flash('Invalid credentials. Please try again.', 'error')
+        except Exception as e:
+            print(f"Error verifying password: {e}")
+            flash('Something went wrong. Please try again later.', 'error')
 
     return render_template('signin.html')
 
@@ -186,6 +180,7 @@ def admin_panel():
     return render_template('admin.html', students=students)
 
 
+# Admin sign-in route
 @app.route('/admin_signin', methods=['GET', 'POST'])
 def admin_signin():
     if request.method == 'POST':
@@ -193,13 +188,19 @@ def admin_signin():
         password = request.form['password']
         user = user_datastore.find_user(email=email)
 
-        # Check if the user exists and is an admin
-        if user and verify_password(password, user.password) and 'admin' in [role.name for role in user.roles]:
-            login_user(user)
-            flash('Admin logged in successfully.', 'success')
-            return redirect(url_for('admin_panel'))
-        else:
-            flash('Invalid admin credentials. Please try again.', 'error')
+        try:
+            if user and argon2.verify(password, user.password):
+                if 'admin' in [role.name for role in user.roles]:
+                    login_user(user)
+                    flash('Admin logged in successfully.', 'success')
+                    return redirect(url_for('admin_panel'))  # Redirect to admin panel
+                else:
+                    flash('Access denied: You are not an admin.', 'error')
+            else:
+                flash('Invalid admin credentials. Please try again.', 'error')
+        except Exception as e:
+            print(f"Error verifying password: {e}")
+            flash('Something went wrong. Please try again later.', 'error')
     return render_template('admin_signin.html')
 
 
@@ -207,7 +208,7 @@ def admin_signin():
 @app.route('/approve/<int:user_id>', methods=['POST'])
 @login_required
 def approve_user(user_id):
-    user = User.query.get(user_id)
+    user = db.session.get(User, user_id)  # Updated to new SQLAlchemy API
     if user:
         user.approved = True
         db.session.commit()
@@ -219,12 +220,33 @@ def approve_user(user_id):
 @app.route('/assign_badge/<int:user_id>', methods=['POST'])
 @login_required
 def assign_badge(user_id):
+    user = db.session.get(User, user_id)  # Updated to new SQLAlchemy API
     badge = request.form.get('badge')
-    user = User.query.get(user_id)
     if user:
         user.badge = badge
         db.session.commit()
         flash(f'Badge {badge} assigned to {user.username}.', 'success')
+    return redirect(url_for('admin_panel'))
+
+
+# Route to delete a user
+@app.route('/delete_user/<int:user_id>', methods=['POST'])
+@login_required
+def delete_user(user_id):
+    # Check if the current user is an admin
+    if 'admin' not in [role.name for role in current_user.roles]:
+        flash('Access Denied: Admins Only!', 'error')
+        return redirect(url_for('home'))
+
+    # Find the user by ID and delete them
+    user = db.session.get(User, user_id)  # Updated to new SQLAlchemy API
+    if user:
+        db.session.delete(user)
+        db.session.commit()
+        flash(f'User {user.username} deleted successfully.', 'success')
+    else:
+        flash('User not found.', 'error')
+
     return redirect(url_for('admin_panel'))
 
 
@@ -240,13 +262,11 @@ def portfolio():
         github_link = form.github_link.data
         facebook_link = form.facebook_link.data
 
-        # Handle image upload
         if form.image.data:
             image_file = secure_filename(form.image.data.filename)
             form.image.data.save(os.path.join(app.config['UPLOAD_FOLDER'], image_file))
             current_user.image_filename = image_file
 
-        # Save portfolio data to the user
         current_user.youtube_link = youtube_link
         current_user.description = description
         current_user.linkedin_link = linkedin_link
@@ -267,6 +287,6 @@ def view_portfolio():
     return render_template('view_portfolio.html', user=current_user, youtube_embed_url=youtube_embed_url)
 
 
-# Run the app
 if __name__ == '__main__':
+    create_admin()  # Call the function to create the admin user
     app.run(debug=True)
