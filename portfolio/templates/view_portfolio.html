@@ -1,5 +1,6 @@
 {% extends "base.html" %}
-{% block title %}Portfolio{% endblock %}
+{% block title %}{{ user.username }}'s Portfolio{% endblock %}
+
 {% block content %}
 <div class="container mt-5">
     <div class="row">
@@ -25,7 +26,7 @@
             <!-- Description -->
             <div class="mb-4">
                 <h4>Description</h4>
-                <p>{{ user.description }}</p>
+                <p>{{ user.description or "No description provided." }}</p>
             </div>
         </div>
 
@@ -48,6 +49,11 @@
                 </li>
                 {% endif %}
             </ul>
+
+            <!-- Show "Edit Portfolio" button only if the logged-in user is viewing their own portfolio -->
+            {% if current_user.id == user.id %}
+            <a href="{{ url_for('portfolio') }}" class="btn btn-secondary btn-block mt-4">Edit Portfolio</a>
+            {% endif %}
         </div>
     </div>
 </div>

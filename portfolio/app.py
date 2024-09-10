@@ -8,9 +8,13 @@ from flask_migrate import Migrate
 from werkzeug.utils import secure_filename
 from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, FileField, SubmitField
-from wtforms.validators import DataRequired, URL
+from wtforms.validators import DataRequired, URL, Optional
 from flask_wtf.file import FileAllowed
 from uuid import uuid4
+from flask import abort
+import requests
+from io import BytesIO
+from PIL import Image
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -90,6 +94,7 @@ def create_admin():
 class PortfolioForm(FlaskForm):
     youtube_link = StringField('YouTube Video Link', validators=[DataRequired(), URL()])
     image = FileField('Upload Image', validators=[FileAllowed(['jpg', 'png'], 'Images only!')])
+    image_url = StringField('Image URL', validators=[URL(), Optional()])
     description = TextAreaField('Description', validators=[DataRequired()])
     linkedin_link = StringField('LinkedIn Profile', validators=[URL()])
     github_link = StringField('GitHub Profile', validators=[URL()])
@@ -100,14 +105,15 @@ class PortfolioForm(FlaskForm):
 # Route for home page
 @app.route('/')
 def home():
-    return render_template('home.html')
+    students = User.query.filter_by(approved=True).all()
+    return render_template('home.html', students=students)
 
 
 # Route for protected dashboard (after login)
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    return redirect(url_for('view_portfolio'))
+    return redirect(url_for('view_own_portfolio'))
 
 
 # Route for user sign-up (registration)
@@ -147,7 +153,7 @@ def signin():
                 if user.approved:
                     login_user(user)
                     flash('Logged in successfully.', 'success')
-                    return redirect(url_for('view_portfolio'))
+                    return redirect(url_for('view_own_portfolio'))
                 else:
                     flash('Your account is not yet approved by the admin.', 'error')
             else:
@@ -193,7 +199,7 @@ def admin_signin():
                 if 'admin' in [role.name for role in user.roles]:
                     login_user(user)
                     flash('Admin logged in successfully.', 'success')
-                    return redirect(url_for('admin_panel'))  # Redirect to admin panel
+                    return redirect(url_for('admin_panel'))
                 else:
                     flash('Access denied: You are not an admin.', 'error')
             else:
@@ -208,7 +214,7 @@ def admin_signin():
 @app.route('/approve/<int:user_id>', methods=['POST'])
 @login_required
 def approve_user(user_id):
-    user = db.session.get(User, user_id)  # Updated to new SQLAlchemy API
+    user = db.session.get(User, user_id)
     if user:
         user.approved = True
         db.session.commit()
@@ -220,7 +226,7 @@ def approve_user(user_id):
 @app.route('/assign_badge/<int:user_id>', methods=['POST'])
 @login_required
 def assign_badge(user_id):
-    user = db.session.get(User, user_id)  # Updated to new SQLAlchemy API
+    user = db.session.get(User, user_id)
     badge = request.form.get('badge')
     if user:
         user.badge = badge
@@ -233,13 +239,11 @@ def assign_badge(user_id):
 @app.route('/delete_user/<int:user_id>', methods=['POST'])
 @login_required
 def delete_user(user_id):
-    # Check if the current user is an admin
     if 'admin' not in [role.name for role in current_user.roles]:
         flash('Access Denied: Admins Only!', 'error')
         return redirect(url_for('home'))
 
-    # Find the user by ID and delete them
-    user = db.session.get(User, user_id)  # Updated to new SQLAlchemy API
+    user = db.session.get(User, user_id)
     if user:
         db.session.delete(user)
         db.session.commit()
@@ -254,6 +258,10 @@ def delete_user(user_id):
 @app.route('/portfolio', methods=['GET', 'POST'])
 @login_required
 def portfolio():
+    if not current_user.is_authenticated:
+        flash("You need to log in to edit your portfolio", "error")
+        return redirect(url_for('signin'))
+
     form = PortfolioForm()
     if form.validate_on_submit():
         youtube_link = form.youtube_link.data
@@ -262,10 +270,29 @@ def portfolio():
         github_link = form.github_link.data
         facebook_link = form.facebook_link.data
 
+        # Handle uploaded image
         if form.image.data:
             image_file = secure_filename(form.image.data.filename)
             form.image.data.save(os.path.join(app.config['UPLOAD_FOLDER'], image_file))
             current_user.image_filename = image_file
+
+        # Handle image URL
+        elif form.image_url.data:
+            try:
+                image_url = form.image_url.data
+                response = requests.get(image_url)
+                img = Image.open(BytesIO(response.content))
+                image_file = f"{uuid4().hex}.jpg"
+                img_path = os.path.join(app.config['UPLOAD_FOLDER'], image_file)
+                img.save(img_path)
+                current_user.image_filename = image_file
+            except Exception as e:
+                flash('Failed to download image from the URL. Please try again.', 'error')
+                return render_template('portfolio.html', form=form)
+
+        # Set a default image if none is provided
+        if not current_user.image_filename:
+            current_user.image_filename = 'default.jpg'
 
         current_user.youtube_link = youtube_link
         current_user.description = description
@@ -274,19 +301,32 @@ def portfolio():
         current_user.facebook_link = facebook_link
         db.session.commit()
         flash('Portfolio updated successfully!', 'success')
-        return redirect(url_for('view_portfolio'))
+        return redirect(url_for('view_own_portfolio'))
 
     return render_template('portfolio.html', form=form)
 
 
 # Route to view portfolio
-@app.route('/view_portfolio')
+@app.route('/view_own_portfolio')
 @login_required
-def view_portfolio():
-    youtube_embed_url = current_user.youtube_link.replace('watch?v=', 'embed/') if current_user.youtube_link else None
-    return render_template('view_portfolio.html', user=current_user, youtube_embed_url=youtube_embed_url)
+def view_own_portfolio():
+    user = current_user
+    youtube_embed_url = user.youtube_link.replace('watch?v=', 'embed/') if user.youtube_link else None
+    return render_template('view_portfolio.html', user=user, youtube_embed_url=youtube_embed_url)
+
+
+@app.route('/view_portfolio/<int:user_id>')
+@login_required
+def view_portfolio(user_id):
+    user = User.query.get(user_id)
+    if not user:
+        flash('User not found.', 'error')
+        return redirect(url_for('home'))
+
+    youtube_embed_url = user.youtube_link.replace('watch?v=', 'embed/') if user.youtube_link else None
+    return render_template('view_portfolio.html', user=user, youtube_embed_url=youtube_embed_url)
 
 
 if __name__ == '__main__':
-    create_admin()  # Call the function to create the admin user
+    create_admin()
     app.run(debug=True)
