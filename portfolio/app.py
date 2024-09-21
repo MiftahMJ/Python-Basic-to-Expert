@@ -15,8 +15,12 @@ from flask import abort
 import requests
 from io import BytesIO
 from PIL import Image
+from wtforms import EmailField, PasswordField
+from wtforms.validators import DataRequired
+from flask_wtf import FlaskForm
 
-# Initialize Flask app
+
+
 app = Flask(__name__)
 
 # Configurations for the app and database
@@ -88,6 +92,16 @@ def create_admin():
             print("Admin user created successfully.")
         else:
             print("Admin user already exists.")
+# Admin login form
+from flask_wtf import FlaskForm
+from wtforms import EmailField, PasswordField
+from wtforms.validators import DataRequired
+
+# Admin login form
+class AdminLoginForm(FlaskForm):
+    email = EmailField('Email', validators=[DataRequired()])  # Name this 'email'
+    password = PasswordField('Password', validators=[DataRequired()])  # Name this 'password'
+
 
 
 # Portfolio form
@@ -186,12 +200,12 @@ def admin_panel():
     return render_template('admin.html', students=students)
 
 
-# Admin sign-in route
 @app.route('/admin_signin', methods=['GET', 'POST'])
 def admin_signin():
-    if request.method == 'POST':
-        email = request.form['email']
-        password = request.form['password']
+    form = AdminLoginForm()  # Initialize the form
+    if form.validate_on_submit():  # Check if the form is submitted and valid
+        email = form.email.data  # Access the email field data
+        password = form.password.data  # Access the password field data
         user = user_datastore.find_user(email=email)
 
         try:
@@ -207,8 +221,8 @@ def admin_signin():
         except Exception as e:
             print(f"Error verifying password: {e}")
             flash('Something went wrong. Please try again later.', 'error')
-    return render_template('admin_signin.html')
 
+    return render_template('admin_signin.html', form=form)  # Pass the form to the template
 
 # Route to approve a user
 @app.route('/approve/<int:user_id>', methods=['POST'])

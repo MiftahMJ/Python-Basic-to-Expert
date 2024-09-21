@@ -5,18 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Home Page{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <head>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 </head>
-
-</head>
-<body>
-    <nav>
-        <ul>
-            <li><a href="{{ url_for('home') }}">Home</a></li>
-            <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
-            <li style="float:right;"><a href="{{ url_for('signup') }}">Sign Up</a></li>
-            <li style="float:right;"><a href="{{ url_for('signin') }}">Sign In</a></li>
+<body style="background-color: #FFFFFF; color: #000000;"> <!-- White background, black text -->
+    <nav style="background-color: #1A1A2E; padding: 10px;"> <!-- Dark Navy background for nav -->
+        <ul style="list-style-type: none; padding: 0; margin: 0;">
+            <li style="display: inline; margin-right: 15px;">
+                <a href="{{ url_for('home') }}" style="color: #FFFFFF; text-decoration: none;">Home</a> <!-- White links -->
+            </li>
+            <li style="display: inline; margin-right: 15px;">
+                <a href="{{ url_for('dashboard') }}" style="color: #FFFFFF; text-decoration: none;">Dashboard</a>
+            </li>
+            <li style="float: right; display: inline; margin-right: 15px;">
+                <a href="{{ url_for('signup') }}" style="color: #3B82F6; text-decoration: none;">Sign Up</a> <!-- Soft Blue for call-to-action -->
+            </li>
+            <li style="float: right; display: inline; margin-right: 15px;">
+                <a href="{{ url_for('signin') }}" style="color: #3B82F6; text-decoration: none;">Sign In</a> <!-- Soft Blue for call-to-action -->
+            </li>
         </ul>
     </nav>
 
@@ -25,7 +30,7 @@
             {% if messages %}
                 <div id="flashes">
                     {% for category, message in messages %}
-                        <div class="flash {{ category }}">{{ message }}</div>
+                        <div class="flash {{ category }}" style="background-color: #F2F2F2; color: #000000;">{{ message }}</div> <!-- Light Gray background for flash messages -->
                     {% endfor %}
                 </div>
             {% endif %}

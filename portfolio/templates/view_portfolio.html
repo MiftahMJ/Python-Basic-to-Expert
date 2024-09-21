@@ -5,7 +5,7 @@
 <div class="container mt-5">
     <div class="row">
         <div class="col-md-8">
-            <h2 class="mb-4">{{ user.username }}'s Portfolio</h2>
+            <h2 class="mb-4" style="color: #3B82F6;">{{ user.username }}'s Portfolio</h2>
 
             <!-- YouTube Video Embed -->
             {% if user.youtube_link %}
@@ -19,7 +19,7 @@
             {% if user.image_filename %}
             <div class="mb-4">
                 <h4>Uploaded Image</h4>
-                <img src="{{ url_for('static', filename='uploads/' ~ user.image_filename) }}" class="img-fluid">
+                <img src="{{ url_for('static', filename='uploads/' ~ user.image_filename) }}" class="img-fluid" style="border: 1px solid #3B82F6; border-radius: 10px;">
             </div>
             {% endif %}
 
@@ -35,24 +35,24 @@
             <ul class="list-group">
                 {% if user.linkedin_link %}
                 <li class="list-group-item">
-                    <a href="{{ user.linkedin_link }}" target="_blank">LinkedIn</a>
+                    <a href="{{ user.linkedin_link }}" target="_blank" style="color: #3B82F6;">LinkedIn</a>
                 </li>
                 {% endif %}
                 {% if user.github_link %}
                 <li class="list-group-item">
-                    <a href="{{ user.github_link }}" target="_blank">GitHub</a>
+                    <a href="{{ user.github_link }}" target="_blank" style="color: #3B82F6;">GitHub</a>
                 </li>
                 {% endif %}
                 {% if user.facebook_link %}
                 <li class="list-group-item">
-                    <a href="{{ user.facebook_link }}" target="_blank">Facebook</a>
+                    <a href="{{ user.facebook_link }}" target="_blank" style="color: #3B82F6;">Facebook</a>
                 </li>
                 {% endif %}
             </ul>
 
             <!-- Show "Edit Portfolio" button only if the logged-in user is viewing their own portfolio -->
             {% if current_user.id == user.id %}
-            <a href="{{ url_for('portfolio') }}" class="btn btn-secondary btn-block mt-4">Edit Portfolio</a>
+            <a href="{{ url_for('portfolio') }}" class="btn btn-primary btn-block mt-4" style="background-color: #3B82F6; border-color: #3B82F6;">Edit Portfolio</a>
             {% endif %}
         </div>
     </div>

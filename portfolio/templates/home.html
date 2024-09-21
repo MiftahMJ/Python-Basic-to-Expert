@@ -9,81 +9,82 @@
     <style>
         /* Custom Color Scheme */
         .navbar {
-            background-color: #002B36; /* Dark blue/navy background */
+            background-color: #1A1A2E; /* Dark Navy background */
         }
         .navbar .nav-link {
             color: #FFFFFF; /* White text for navbar links */
         }
         .hero {
-            background-color: #002B36; /* Dark teal/navy background */
+            background-color: #F2F2F2; /* Light Gray background for hero section */
             padding: 100px 0;
             text-align: center;
-            color: #FFFFFF; /* White text for hero section */
+            color: #000000; /* Black text for hero section */
         }
         .hero h1 {
             font-size: 3rem;
             margin-bottom: 20px;
-            color: #FF3B69; /* Pink highlight for hero title */
+            color: #3B82F6; /* Soft Blue highlight for hero title */
         }
         .hero p {
             font-size: 1.2rem;
             margin-bottom: 30px;
-            color: #3A536B; /* Light teal/blue text */
+            color: #333333; /* Dark Gray text */
         }
         .btn-custom {
             margin: 5px;
             color: #FFFFFF; /* White text for buttons */
         }
         .btn-primary {
-            background-color: #FF3B69; /* Pink buttons */
-            border-color: #FF3B69;
+            background-color: #3B82F6; /* Soft Blue buttons */
+            border-color: #3B82F6;
         }
         .btn-primary:hover {
-            background-color: #e22d5a; /* Darker pink on hover */
+            background-color: #1A1A2E; /* Dark Navy on hover */
         }
         .btn-secondary {
-            background-color: #3A536B; /* Light teal/blue buttons */
-            border-color: #3A536B;
+            background-color: #F2F2F2; /* Light Gray buttons */
+            color: #000000; /* Black text */
+            border-color: #3B82F6; /* Soft Blue border */
         }
         .profile-card {
             border: 1px solid #e6e6e6; /* Light gray border */
             border-radius: 10px;
             padding: 20px;
             margin-bottom: 20px;
-            background-color: #2A4755; /* Lighter shade of #002B36 for card body */
+            background-color: #F2F2F2; /* Light Gray background for card body */
             box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
         }
         .profile-card h4 {
             margin-bottom: 10px;
-            color: #FFFFFF; /* White text for the card title */
+            color: #000000; /* Black text for the card title */
         }
         .profile-card p {
-            color: #CCCCCC; /* Light gray text for description */
+            color: #666666; /* Medium gray text for description */
         }
         .profile-card img {
             max-width: 100%;
             height: auto;
             border-radius: 50%;
-            border: 2px solid #002B36; /* Navy border around image */
+            border: 2px solid #1A1A2E; /* Navy border around image */
         }
         .profile-links a {
             margin-right: 10px;
-            color: #3A536B; /* Light teal/blue links */
-            border: 1px solid #3A536B; /* Light teal border */
+            color: #3B82F6; /* Soft Blue links */
+            border: 1px solid #3B82F6; /* Soft Blue border */
             border-radius: 5px;
             padding: 5px 10px;
         }
         .profile-links a:hover {
-            color: #FF3B69; /* Pink hover for social links */
-            border-color: #FF3B69; /* Pink border on hover */
+            color: #1A1A2E; /* Dark Navy on hover for social links */
+            border-color: #1A1A2E; /* Dark Navy border on hover */
         }
         .btn-view {
-            background-color: #FF3B69; /* Pink View Portfolio button */
+            background-color: #3B82F6; /* Soft Blue View Portfolio button */
             color: white;
             border: none;
         }
         .btn-view:hover {
-            background-color: #e22d5a; /* Darker pink on hover */
+            background-color: #1A1A2E; /* Dark Navy on hover */
         }
     </style>
 </head>
@@ -121,7 +122,7 @@
     </section>
 
     <section class="container mt-5">
-        <h2 class="text-center mb-5" style="color:#002B36;">Student Portfolios</h2>
+        <h2 class="text-center mb-5" style="color:#1A1A2E;">Student Portfolios</h2>
         <div class="row">
             <!-- Loop through the students -->
             {% for student in students %}

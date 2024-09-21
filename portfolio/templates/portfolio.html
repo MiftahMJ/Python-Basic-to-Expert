@@ -12,7 +12,7 @@
                 <!-- YouTube Video Input -->
                 <div class="mb-3">
                     {{ form.youtube_link.label(class="form-label") }}
-                    {{ form.youtube_link(class="form-control") }}
+                    {{ form.youtube_link(class="form-control", style="background-color: #F2F2F2; color: #000000; border-color: #3B82F6;") }}
                     {% if current_user.youtube_link %}
                         <div class="mt-3">
                             <h5>YouTube Video Preview</h5>
@@ -24,10 +24,10 @@
                 <!-- Image Upload -->
                 <div class="mb-3">
                     {{ form.image.label(class="form-label") }}
-                    {{ form.image(class="form-control") }}
+                    {{ form.image(class="form-control", style="background-color: #F2F2F2; color: #000000; border-color: #3B82F6;") }}
                     <p>Or</p>
                     {{ form.image_url.label(class="form-label") }}
-                    {{ form.image_url(class="form-control") }}
+                    {{ form.image_url(class="form-control", style="background-color: #F2F2F2; color: #000000; border-color: #3B82F6;") }}
                     {% if current_user.image_filename %}
                         <div class="mt-3">
                             <h5>Current Image</h5>
@@ -39,28 +39,28 @@
                 <!-- Description Input -->
                 <div class="mb-3">
                     {{ form.description.label(class="form-label") }}
-                    {{ form.description(class="form-control") }}
+                    {{ form.description(class="form-control", style="background-color: #F2F2F2; color: #000000; border-color: #3B82F6;") }}
                 </div>
 
                 <!-- Social Links with Icons -->
                 <h4 class="mt-4">Social Links</h4>
                 <div class="mb-3">
                     <label class="form-label"><i class="fab fa-linkedin"></i> LinkedIn</label>
-                    {{ form.linkedin_link(class="form-control") }}
+                    {{ form.linkedin_link(class="form-control", style="background-color: #F2F2F2; color: #000000; border-color: #3B82F6;") }}
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label"><i class="fab fa-github"></i> GitHub</label>
-                    {{ form.github_link(class="form-control") }}
+                    {{ form.github_link(class="form-control", style="background-color: #F2F2F2; color: #000000; border-color: #3B82F6;") }}
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label"><i class="fab fa-facebook"></i> Facebook</label>
-                    {{ form.facebook_link(class="form-control") }}
+                    {{ form.facebook_link(class="form-control", style="background-color: #F2F2F2; color: #000000; border-color: #3B82F6;") }}
                 </div>
 
                 <!-- Save Button -->
-                <button type="submit" class="btn btn-primary w-100">Save Portfolio</button>
+                <button type="submit" class="btn btn-primary w-100" style="background-color: #3B82F6; border-color: #3B82F6;">Save Portfolio</button>
             </form>
         </div>
     </div>

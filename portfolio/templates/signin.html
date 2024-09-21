@@ -8,36 +8,36 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            background-color: #002B36;
-            color: #FFFFFF;
+            background-color: #FFFFFF; /* White background */
+            color: #000000; /* Black text */
         }
         .form-control {
-            background-color: #003845;
-            color: #FFFFFF;
-            border: 1px solid #1C9BA7;
+            background-color: #F2F2F2; /* Light gray background for input fields */
+            color: #000000; /* Black text in input fields */
+            border: 1px solid #3B82F6; /* Soft blue border */
         }
         .form-control::placeholder {
-            color: #8FAFB8;
+            color: #8FAFB8; /* Placeholder text color */
         }
         .btn-primary {
-            background-color: #1C9BA7;
+            background-color: #3B82F6; /* Soft blue button */
             border: none;
         }
         .btn-primary:hover {
-            background-color: #17A7B7;
+            background-color: #1A1A2E; /* Dark navy on hover */
         }
         .container {
-            background-color: #014D64;
+            background-color: #F2F2F2; /* Light gray container background */
             border-radius: 10px;
             padding: 30px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
         }
         h2 {
-            color: #1C9BA7;
+            color: #3B82F6; /* Soft blue heading */
         }
         .alert-warning {
-            background-color: #ffcc00;
-            color: #333;
+            background-color: #FFCC00; /* Bright yellow for warning messages */
+            color: #333; /* Dark text for warnings */
         }
     </style>
 </head>
@@ -60,9 +60,10 @@
         </div>
     </div>
 </div>
+
 {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
-        <div class="alert alert-warning" role="alert">
+        <div class="alert alert-warning mt-3" role="alert">
             {% for category, message in messages %}
                 <p>{{ message }}</p>
             {% endfor %}
