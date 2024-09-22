@@ -243,6 +243,7 @@ def assign_badge(user_id):
     user = db.session.get(User, user_id)
     badge = request.form.get('badge')
     if user:
+
         user.badge = badge
         db.session.commit()
         flash(f'Badge {badge} assigned to {user.username}.', 'success')
