@@ -13,8 +13,8 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db)
 
-    # Use relative import to import routes
-    from .routes.user_routes import user_bp  # Using a dot (.) for relative import
-    app.register_blueprint(user_bp)
+    # Corrected relative import
+    from .routes.user_routes import user_bp
+    app.register_blueprint(user_bp, url_prefix='/api')
 
     return app
