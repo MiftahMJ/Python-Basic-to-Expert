@@ -4,7 +4,7 @@ import time
 
 
 def fetch_coins():
-    try:
+    try: 
         response = requests.get("https://api.coingecko.com/api/v3/coins/markets",
                                 params={"vs_currency": "usd"})
         response.raise_for_status()
